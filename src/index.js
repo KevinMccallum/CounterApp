@@ -1,12 +1,19 @@
-import React, { Component } from 'react'
+import React, { Component, PureComponent } from 'react'
 import ReactDOM from 'react-dom'
 import './index.css'
+
+class OldValue extends PureComponent {
+  render() {
+    return <div>{this.props.value}</div>
+  }
+}
 
 class Counter extends Component {
   state = {
     wrap: {
       count: 0,
       lit: true,
+      oldValues: [],
     },
   }
 
@@ -15,6 +22,7 @@ class Counter extends Component {
       wrap: {
         ...this.state.wrap,
         count: (this.state.wrap.count += 1),
+        oldValues: [...this.state.wrap.oldValues, this.state.wrap.count],
       },
     })
   }
@@ -24,6 +32,7 @@ class Counter extends Component {
       wrap: {
         ...this.state.wrap,
         count: (this.state.wrap.count -= 1),
+        oldValues: [...this.state.wrap.oldValues, this.state.wrap.count],
       },
     })
   }
@@ -40,14 +49,23 @@ class Counter extends Component {
   render() {
     const { count, lit } = this.state.wrap
     return (
-      <div className={`counter ${lit ? '' : 'dark'}`}>
-        <h2>Counter</h2>
-        <div>
-          <button onClick={this.decrement}>-</button>
-          <span className="count">{count}</span>
-          <button onClick={this.increment}>+</button>
+      <div>
+        <div className={`counter ${lit ? '' : 'dark'}`}>
+          <h2>Counter</h2>
+          <div>
+            <button onClick={this.decrement}>-</button>
+            <span className="count">{count}</span>
+            <button onClick={this.increment}>+</button>
+          </div>
+          <button onClick={this.toggle}>On / Off</button>
         </div>
-        <button onClick={this.toggle}>On / Off</button>
+        <ul>
+          {this.state.wrap.oldValues.map((value, index) => (
+            <li key={index}>
+              <OldValue value={value} />
+            </li>
+          ))}
+        </ul>
       </div>
     )
   }
